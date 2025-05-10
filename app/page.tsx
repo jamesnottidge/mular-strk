@@ -30,10 +30,15 @@ export default function Page() {
         // Setup intersection observers for each section
         const sections = ['intro', 'approach1', 'approach2', 'approach3', 'conclusion'];
 
+        // Define the types for the refs
+        type SectionRefType = Record<string, HTMLElement | null>;
+        type ObserverRefType = Record<string, IntersectionObserver>;
+        
+        // Type assertion for the refs
         sections.forEach((section) => {
-            sectionRefs.current[section] = document.getElementById(section);
+            (sectionRefs.current as SectionRefType)[section] = document.getElementById(section);
 
-            observerRefs.current[section] = new IntersectionObserver(
+            (observerRefs.current as ObserverRefType)[section] = new IntersectionObserver(
                 (entries) => {
                     entries.forEach((entry) => {
                         if (entry.isIntersecting) {
@@ -44,26 +49,28 @@ export default function Page() {
                 { threshold: 0.5 },
             );
 
-            if (sectionRefs.current[section]) {
-                observerRefs.current[section].observe(sectionRefs.current[section]);
+            if ((sectionRefs.current as SectionRefType)[section]) {
+                (observerRefs.current as ObserverRefType)[section].observe(
+                    (sectionRefs.current as SectionRefType)[section]!
+                );
             }
         });
 
         return () => {
             // Cleanup observers
-            sections.forEach((section) => {
-                if (sectionRefs.current[section as keyof typeof sectionRefs.current] && 
-                    observerRefs.current[section as keyof typeof observerRefs.current]) {
-                    observerRefs.current[section as keyof typeof observerRefs.current].unobserve(
-                        sectionRefs.current[section as keyof typeof sectionRefs.current]
-                    );
+            sections.forEach((section: string) => {
+                const sectionRef = (sectionRefs.current as SectionRefType)[section];
+                const observerRef = (observerRefs.current as ObserverRefType)[section];
+                
+                if (sectionRef && observerRef) {
+                    observerRef.unobserve(sectionRef);
                 }
             });
             clearTimeout(timer);
         };
-    }, [isLoaded]);
+    }, []);
 
-    const scrollToSection = (sectionId) => {
+    const scrollToSection = (sectionId: string) => {
         const section = document.getElementById(sectionId);
         if (section) {
             section.scrollIntoView({ behavior: 'smooth' });
@@ -365,7 +372,7 @@ export default function Page() {
                         <div className="order-2 md:order-1" data-oid="h2ggu18">
                             <div
                                 className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 transform transition-all duration-500 hover:scale-105"
-                                onMouseEnter={() => setHoveredApproach('approach1')}
+                                onMouseEnter={() => setHoveredApproach('approach1' as any)}
                                 onMouseLeave={() => setHoveredApproach(null)}
                                 data-oid="::.pjvn"
                             >
@@ -695,7 +702,7 @@ export default function Page() {
                         <div data-oid=".1o.rm6">
                             <div
                                 className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 transform transition-all duration-500 hover:scale-105"
-                                onMouseEnter={() => setHoveredApproach('approach2')}
+                                onMouseEnter={() => setHoveredApproach('approach2' as any)}
                                 onMouseLeave={() => setHoveredApproach(null)}
                                 data-oid="q7zi4o5"
                             >
@@ -840,7 +847,7 @@ export default function Page() {
                         <div className="order-2 md:order-1" data-oid="qm:o6u1">
                             <div
                                 className="bg-white p-8 rounded-2xl shadow-lg border border-gray-100 transform transition-all duration-500 hover:scale-105"
-                                onMouseEnter={() => setHoveredApproach('approach3')}
+                                onMouseEnter={() => setHoveredApproach('approach3' as any)}
                                 onMouseLeave={() => setHoveredApproach(null)}
                                 data-oid="-gbbk7k"
                             >
